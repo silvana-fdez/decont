@@ -33,8 +33,34 @@ FILTER_WORD=$4
 # Extract the filename from the URL
 FILENAME=$(basename "$FILE_URL")
 
+# Function to check if a file or directory exists
+check_existence() {
+    if [ -e "$1" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Function to check write permission
+check_write_permission() {
+    if [ -w "$1" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Create the output directory if it doesn't exist
-mkdir -p "$OUTPUT_DIR"
+if ! check_existence "$OUTPUT_DIR"; then
+    mkdir -p "$OUTPUT_DIR"
+fi
+
+# Check write permission for the output directory
+if ! check_write_permission "$OUTPUT_DIR"; then
+    echo "No write permission for the output directory $OUTPUT_DIR."
+    exit 1
+fi
 
 # Download the file (overwrite if exists)
 echo "Downloading $FILENAME"
