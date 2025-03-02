@@ -8,3 +8,4 @@ data/*
 !data/urls
 log/*
 !log/.gitkeep
+scripts/pipeline-prueba.sh
