@@ -38,7 +38,7 @@ mkdir -p "$OUTPUT_DIR"
 
 # Download the file (overwrite if exists)
 echo "Downloading $FILENAME"
-wget -O "$OUTPUT_DIR"/"$FILENAME" "$FILE_URLS"
+wget -O "$OUTPUT_DIR"/"$FILENAME" "$FILE_URL"
 
 # Check if the download was successful
 if [ $? -ne 0 ]; then
@@ -54,8 +54,8 @@ if [ "$UNCOMPRESS" = "yes" ]; then
 fi
 
 # Optionally filter the sequence
-if [ ! -z "$FILTER_WORD" ]
-do
+if [ -n "$FILTER_WORD" ]
+then
   echo "Filtering the sequence $FILTER_WORD in file ${FILENAME%.gz}"
 
   # /$FILTER_WORD/ → finds the line with the word small nuclear.
