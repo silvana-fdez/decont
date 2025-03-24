@@ -6,13 +6,14 @@ done
 
 # Download the contaminants fasta file, uncompress it, and
 # filter to remove all small nuclear RNAs
+echo "Indexando archivo de contaminantes..."
 bash scripts/download.sh https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz res yes "small nuclear"
 
 # Index the contaminants file
-#bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
+bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
 
 # Merge the samples into a single file
-echo "Merging FASTQ files..."
+echo "Fusionando archivos FASTQ..."
 ids="C57BL SPRET"
 for sid in $ids 
 do

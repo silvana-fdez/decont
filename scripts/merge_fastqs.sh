@@ -6,7 +6,7 @@
 
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <input_directory> <output_directory> <sample_id>"
+    echo "Uso: $0 <input_directory> <output_directory> <sample_id>"
     exit 1
 fi
 
@@ -16,7 +16,7 @@ SAMPLE_ID="$3"
 
 # Check if the input directory exists 
 if [ ! -d "$INPUT_DIR" ]; then
-    echo "Error: Input directory '$INPUT_DIR' does not exist."
+    echo "Error: El directorio de entrada '$INPUT_DIR' no existe."
     exit 1
 fi
 
@@ -29,4 +29,4 @@ OUTPUT_FILE="$OUTPUT_DIR/${SAMPLE_ID}_merged.fastq.gz"
 # Find and merge all FASTQ files matching the sample ID
 cat "$INPUT_DIR"/"$SAMPLE_ID"*.fastq.gz > "$OUTPUT_FILE"
 
-echo "Merged files saved to: $OUTPUT_FILE"
+echo "Archivos fusionados guardados en: $OUTPUT_FILE"
