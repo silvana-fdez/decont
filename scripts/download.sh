@@ -73,9 +73,11 @@ if [ $? -ne 0 ]; then
 fi
 
 # Optionally uncompress the file
+echo "FILENAME:$FILENAME"
+
 if [ "$UNCOMPRESS" = "yes" ]; then
     echo "Uncompressing downloaded files..."
-    gunzip -c "$OUTPUT_DIR"/"$FILENAME" > "$OUTPUT_DIR"/"${FILENAME.gz}"
+    gunzip -c "$OUTPUT_DIR"/"$FILENAME" > "$OUTPUT_DIR"/"${FILENAME%.gz}"
 #Ensure that the original file .gz is not removed
     if [ $? -ne 0 ]; then
 	echo "Failed to uncompress the file."
