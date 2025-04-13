@@ -1,39 +1,39 @@
 #!/bin/bash
 
-# This script should download the file specified in the first argument ($1),
-# place it in the directory specified in the second argument ($2),
-# and *optionally*:
-# - uncompress the downloaded file with gunzip if the third
-#   argument ($3) contains the word "yes"
-# - filter the sequences based on a word contained in their header lines:
-#   sequences containing the specified word in their header should be **excluded**
+# Este script debe descargar el archivo especificado en el primer argumento ($1),
+# colocarlo en el directorio especificado en el segundo argumento ($2),
+# y *opcionalmente*:
+# - descomprimir el archivo descargado con gunzip si el tercer
+#   argumento ($3) contiene la palabra "yes"
+# - filtrar las secuencias basadas en una palabra contenida en sus líneas de encabezado:
+#   las secuencias que contengan la palabra especificada en su encabezado deben ser **excluidas**
 #
-# Example of the desired filtering:
+# Ejemplo del filtrado deseado:
 #
-#   > this is my sequence
+#   > esta es mi secuencia
 #   CACTATGGGAGGACATTATAC
-#   > this is my second sequence
+#   > esta es mi segunda secuencia
 #   CACTATGGGAGGGAGAGGAGA
-#   > this is another sequence
+#   > esta es otra secuencia
 #   CCAGGATTTACAGACTTTAAA
 #
-#   If $4 == "another" only the **first two sequence** should be output
+#   Si $4 == "otra" solo las **primeras dos secuencias** deben ser incluidas
 
-# Check if the required arguments are provided
+# Verifica si se proporcionan los argumentos requeridos
 if [ -z "$1" ] || [ -z "$2" ]; then
-    echo "Usage: $0 <url_to_download> <output_directory> [uncompress_yes_no] [filter_word]"
+    echo "Uso: $0 <url_de_descarga> <directorio_de_salida> [descomprimir_si_no] [palabra_de_filtro]"
     exit 1
 fi
 
-# Assign arguments to variables
+# Asigna argumentos a variables
 FILE_URL=$1
 OUTPUT_DIR=$2
 UNCOMPRESS=$3
 FILTER_WORD=$4
-# Extract the filename from the URL
+# Extrae el nombre del archivo de la URL
 FILENAME=$(basename "$FILE_URL")
 
-# Function to check if a file or directory exists
+# Función para verificar si un archivo o directorio existe
 check_existence() {
     if [ -e "$1" ]; then
         return 0
@@ -42,7 +42,7 @@ check_existence() {
     fi
 }
 
-# Function to check write permission
+# Función para verificar permiso de escritura
 check_write_permission() {
     if [ -w "$1" ]; then
         return 0
@@ -51,52 +51,49 @@ check_write_permission() {
     fi
 }
 
-# Create the output directory if it doesn't exist
+# Crea el directorio de salida si no existe
 if ! check_existence "$OUTPUT_DIR"; then
     mkdir -p "$OUTPUT_DIR"
 fi
 
-# Check write permission for the output directory
+# Verifica permiso de escritura para el directorio de salida
 if ! check_write_permission "$OUTPUT_DIR"; then
-    echo "No write permission for the output directory $OUTPUT_DIR."
+    echo "No hay permiso de escritura para el directorio de salida $OUTPUT_DIR."
     exit 1
 fi
 
-# Download the file (overwrite if exists)
-echo "Downloading $FILENAME"
+# Descarga el archivo (sobrescribe si existe)
+echo "Descargando $FILENAME"
 wget -O "$OUTPUT_DIR"/"$FILENAME" "$FILE_URL"
 
-# Check if the download was successful
+# Verifica si la descarga fue exitosa
 if [ $? -ne 0 ]; then
-    echo "Failed to download the file. Please check the URLs and try again."
+    echo "Falló la descarga del archivo. Por favor, verifica las URLs y vuelve a intentarlo."
     exit 1
 fi
 
-# Optionally uncompress the file
-echo "FILENAME:$FILENAME"
+# Opcionalmente descomprime el archivo
+echo "NOMBRE DE ARCHIVO:$FILENAME"
 
 if [ "$UNCOMPRESS" = "yes" ]; then
-    echo "Uncompressing downloaded files..."
+    echo "Descomprimiendo archivos descargados..."
     gunzip -c "$OUTPUT_DIR"/"$FILENAME" > "$OUTPUT_DIR"/"${FILENAME%.gz}"
-#Ensure that the original file .gz is not removed
+    # Asegúrate de que el archivo .gz original no se elimine
     if [ $? -ne 0 ]; then
-	echo "Failed to uncompress the file."
-	exit 1
+        echo "Falló la descompresión del archivo."
+        exit 1
     fi
-
 fi
 
-# Optionally filter the sequence
-if [ -n "$FILTER_WORD" ]
-then
-  echo "Filtering the sequence $FILTER_WORD in file ${FILENAME%.gz}"
+# Opcionalmente filtra la secuencia
+if [ -n "$FILTER_WORD" ]; then
+    echo "Filtrando la secuencia $FILTER_WORD en el archivo ${FILENAME%.gz}"
 
-  # /$FILTER_WORD/ → finds the line with the word small nuclear.
-  # { :loop; N; /.*>.*>/!bloop; s/>.*>/>/; }
-  #    :loop → Marks a jump point (loop).
-  #    N → Adds the next line to the buffer.
-  #    /^>[^>]+>/!bloop → Searches for characters different from `>`. If not found, it returns to the loop, adding another line and keeps looking rec>
-  #    s/>.*>/>/ → Once we have the entire block, we replace the content between the two > symbols with a single >.
-  sed -r "/$FILTER_WORD/ { :loop; N; /^>[^>]+>/!bloop; s/>.*>/>/; }" "$OUTPUT_DIR"/"${FILENAME%.gz}" > "$OUTPUT_DIR"/"Filtered_${FILENAME%.gz}"
+    # /$FILTER_WORD/ → encuentra la línea con la palabra small nuclear.
+    # { :loop; N; /.*>.*>/!bloop; s/>.*>/>/; }
+    #    :loop → Marca un punto de salto (loop).
+    #    N → Agrega la siguiente línea al búfer.
+    #    /^>[^>]+>/!bloop → Busca caracteres diferentes de `>`. Si no se encuentran, vuelve al bucle, agregando otra línea y sigue buscando recursivamente.
+    #    s/>.*>/>/ → Una vez que tenemos todo el bloque, reemplazamos el contenido entre los dos símbolos > con un solo >.
+    sed -r "/$FILTER_WORD/ { :loop; N; /^>[^>]+>/!bloop; s/>.*>/>/; }" "$OUTPUT_DIR"/"${FILENAME%.gz}" > "$OUTPUT_DIR"/"Filtered_${FILENAME%.gz}"
 fi
-
