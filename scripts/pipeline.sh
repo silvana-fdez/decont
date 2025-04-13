@@ -93,7 +93,7 @@ mkdir -p out/trimmed log/cutadapt/
 for file in out/merged/*_merged.fastq.gz; do
     sample=$(basename "$file" "_merged.fastq.gz")
     cutadapt -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed \
-        -o out/trimmed/${sample}_trimmed.fastq.gz "$file" > log/${sample}_cutadapt.log
+        -o out/trimmed/${sample}_trimmed.fastq.gz "$file" > log/cutadapt/${sample}_cutadapt.log
 done
 
 check_and_run "out/trimmed/SPRET_EiJ_trimmed.fastq.gz"
